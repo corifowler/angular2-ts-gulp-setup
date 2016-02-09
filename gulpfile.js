@@ -10,12 +10,6 @@ var htmlhint   = require('gulp-htmlhint');
 var sourcemaps = require('gulp-sourcemaps');
 var concat     = require('gulp-concat');
 
-var notifyError = function() {
-  return plumber({
-    errorHandler: notify.onError('Error: <%= error.message %>')
-  });
-};
-
 var paths = {
   appJavascript: ['**/*.ts', '**/**/*.ts', '!node_modules/**/*.**']
 }
@@ -93,7 +87,6 @@ gulp.task('compile', ['concat', 'maps']);
 
 gulp.task('sass', function() {
   return gulp.src('./sass/main.scss')
-    .pipe(notifyError())
     .pipe(sass())
     .pipe(gulp.dest('./app/css'));
 });
@@ -131,7 +124,6 @@ gulp.task('webserver', function() {
 
 gulp.task('hint:js', function() {
   return gulp.src(['./build/*.js', './build/**/*.js', '!./app/dist/app.js'])
-    .pipe(notifyError())
     .pipe(jshint({"esnext" : true}))
     .pipe(jshint.reporter('fail'))
     .pipe(jshint.reporter('jshint-stylish'));
@@ -139,7 +131,6 @@ gulp.task('hint:js', function() {
 
 gulp.task('hint:html', function() {
   return gulp.src('app/index.html')
-    .pipe(notifyError())
     .pipe(htmlhint())
     .pipe(htmlhint.failReporter());
 });
