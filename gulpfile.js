@@ -15,6 +15,24 @@ var paths = {
 }
 
 // ============================================
+//  CONCAT ALL REQUIRED POLYFILLS (IN ORDER)
+// ============================================
+
+gulp.task('polyfills', function() {
+  return gulp.src([
+    'node_modules/es6-shim/es6-shim.min.js',
+    'node_modules/systemjs/dist/system-polyfills.js',
+    'node_modules/angular2/bundles/angular2-polyfills.js',
+    'node_modules/systemjs/dist/system.src.js',
+    'node_modules/rxjs/bundles/Rx.js',
+    'node_modules/angular2/bundles/angular2.dev.js'
+    ])
+    .pipe(concat('polyfills.js'))
+    .pipe(gulp.dest('./app/dist'));
+});
+
+
+// ============================================
 //  TYPESCRIPT LINTER
 // ============================================
 
@@ -39,7 +57,7 @@ gulp.task('ts', function() {
   var tsResults = tsProject.src(paths.appJavascript)
     .pipe(ts(tsProject));
 
-  return tsResults.js.pipe(gulp.dest('./build/')); // save files in same place as .ts files
+  return tsResults.js.pipe(gulp.dest('./app/dist')); // save files in same place as .ts files
 });
 
 // ============================================
@@ -104,7 +122,7 @@ gulp.task('watchlist', function() {
   gulp.watch('./ts/**.ts', ['ts']);
   gulp.watch('./sass/*.scss', ['sass']);
   gulp.watch('./app/index.html', ['hint:html']);
-  gulp.watch(['./build/**/*.js', '!./app/dist'], ['hint:js']);
+  gulp.watch(['./app/**/*.js', '!./app/dist/app.js'], ['hint:js']);
 })
 
 // ============================================
@@ -112,8 +130,9 @@ gulp.task('watchlist', function() {
 // ============================================
 
 gulp.task('webserver', function() {
-  return gulp.src('app')
+  return gulp.src('')
     .pipe(server({
+      defaultFile: 'app/index.html',
       livereload: true
     }));
 });
@@ -123,7 +142,7 @@ gulp.task('webserver', function() {
 // ============================================
 
 gulp.task('hint:js', function() {
-  return gulp.src(['./build/*.js', './build/**/*.js', '!./app/dist/app.js'])
+  return gulp.src(['./app/*.js', './build/**/*.js', '!./app/dist/app.js'])
     .pipe(jshint({"esnext" : true}))
     .pipe(jshint.reporter('fail'))
     .pipe(jshint.reporter('jshint-stylish'));
